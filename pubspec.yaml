@@ -1,0 +1,24 @@
+name: image_finder
+description: A new Flutter project.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.0.3 <4.0.0'
+
+dependencies:
+  file_picker: ^5.3.2
+  flutter:
+    sdk: flutter
+  flutter_tesseract_ocr: ^0.4.23
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  assets:
+    - assets/
+    - assets/tessdata/
+  uses-material-design: true
