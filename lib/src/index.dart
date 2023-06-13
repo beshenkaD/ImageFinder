@@ -1,26 +1,26 @@
 import 'dart:io';
-import 'package:sqflite/sqflite.dart';
 
 import 'ocr.dart';
 import 'database.dart';
+import 'index_dao.dart';
 
-// TODO: is it useful?
-// class Index {
-//   final String path;
-//   final String text;
+class Index implements IDatabaseEntity {
+  final String path;
+  final String text;
 
-//   const Index({
-//     required this.path,
-//     required this.text,
-//   });
+  const Index({
+    required this.path,
+    required this.text,
+  });
 
-//   Map<String, dynamic> toMap() {
-//     return {
-//       'path': path,
-//       'text': text,
-//     };
-//   }
-// }
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'path': path,
+      'text': text,
+    };
+  }
+}
 
 /// This class performs indexing of image files
 ///
@@ -36,13 +36,7 @@ class Indexer {
   /// This function indexes one single file
   Future<void> indexFile(String filepath) async {
     final text = await _wrapper.extractText(filepath);
-    final conn = await DatabaseConnection().connection;
-
-    await conn.insert(
-      'indexes',
-      {'path': filepath, 'text': text},
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await IndexDao.insert(Index(path: filepath, text: text));
   }
 
   /// This function indexes all image files in directory

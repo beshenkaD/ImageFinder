@@ -1,5 +1,10 @@
 import 'package:sqflite/sqflite.dart';
 
+/// Interface defining entity which is stored in database
+abstract class IDatabaseEntity {
+  Map<String, dynamic> toMap();
+}
+
 /// Singlton database connection
 ///
 /// Initialize it with `create` method using `sqflite.openDatabase`
