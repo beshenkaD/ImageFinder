@@ -59,7 +59,18 @@ class Indexer {
   }
 
   bool _isImage(String path) {
-    for (final ext in ['.jpg', '.png', '.jpeg']) {
+    final extensions = [
+      '.jpg',
+      '.png',
+      '.jpeg',
+      '.tiff',
+      '.gif',
+      '.webp',
+      '.bmp',
+      '.pnm',
+    ];
+
+    for (final ext in extensions) {
       if (path.endsWith(ext)) {
         return true;
       }
