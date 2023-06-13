@@ -17,12 +17,13 @@ class OcrWrapper {
 
       // https://muthu.co/all-tesseract-ocr-options/
       // 11 - Sparse text. Find as much text as possible in no particular order.
+      // 12 - Sparse text with OSD.
       args: {
-        "psm": "11",
+        "psm": "12",
         "preserve_interword_spaces": "1",
       },
     );
 
-    return text.replaceAll('\n', ' ');
+    return text.replaceAll('\n', ' ').toLowerCase();
   }
 }

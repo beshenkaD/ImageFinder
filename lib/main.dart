@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'src/database.dart';
 import 'src/index.dart';
 import 'src/ocr.dart';
+import 'src/match.dart';
 
 void main() => runApp(MainApp());
 
@@ -64,9 +65,9 @@ class MainApp extends StatelessWidget {
                 ),
                 FloatingActionButton(
                   onPressed: () async {
-                    await _printDatabase();
+                    await Matcher.match('funny mouse');
                   },
-                  child: const Text('Print!'),
+                  child: const Text('Match!'),
                 ),
               ]),
         ),
