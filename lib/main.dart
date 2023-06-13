@@ -1,33 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter_tesseract_ocr/flutter_tesseract_ocr.dart';
-import 'dart:io';
+import 'package:sqflite/sqflite.dart';
+import 'dart:async';
+import 'package:path/path.dart' as p;
+import 'src/database.dart';
+import 'src/index.dart';
+import 'src/ocr.dart';
 
-void main() => runApp(const MainApp());
+void main() => runApp(MainApp());
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  MainApp({super.key}) {
+    _initDatabase().whenComplete(() => null);
+  }
 
-  Future<File> _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+  Future<void> _initDatabase() async {
+    WidgetsFlutterBinding.ensureInitialized();
+
+    DatabaseConnection().create(openDatabase(
+      p.join(await getDatabasesPath(), 'image_finder.db'),
+      onCreate: (db, version) {
+        return db.execute(
+          'CREATE TABLE indexes(path TEXT PRIMARY KEY, text TEXT)',
+        );
+      },
+      version: 1,
+    ));
+  }
+
+  Future<void> _printDatabase() async {
+    final conn = await DatabaseConnection().connection;
+
+    final res = await conn.query('indexes');
+    print(res);
+  }
+
+  Future<String> _pickDirectory() async {
+    String? result = await FilePicker.platform.getDirectoryPath();
 
     if (result != null) {
-      File file = File(result.files.single.path!);
-      return file;
+      return result;
     }
 
     throw 'error picking file';
-  }
-
-  Future<String> _ocrText(File file, String lang) async {
-    String text = await FlutterTesseractOcr.extractText(file.absolute.path,
-        language: lang,
-        args: {
-          "psm": "4",
-          // "preserve_interword_spaces": "1",
-        });
-
-    return text;
   }
 
   @override
@@ -40,11 +55,18 @@ class MainApp extends StatelessWidget {
               children: <Widget>[
                 FloatingActionButton(
                   onPressed: () async {
-                    File file = await _pickFile();
-                    String text = await _ocrText(file, 'eng');
-                    print(text);
+                    final dir = await _pickDirectory();
+                    final indexer = Indexer(const OcrWrapper());
+                    await indexer.indexDirectory(dir);
+                    print('directory $dir indexed!');
                   },
-                  child: const Text('OCR IT!'),
+                  child: const Text('Select index directory'),
+                ),
+                FloatingActionButton(
+                  onPressed: () async {
+                    await _printDatabase();
+                  },
+                  child: const Text('Print!'),
                 ),
               ]),
         ),
